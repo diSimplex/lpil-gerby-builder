@@ -1,0 +1,19 @@
+# This is an example LPiL Gerby Builder YAML configuration
+
+# We start by listing a collection of tasks.
+#
+
+# Each task contains a directory, a git-url, a LPiL LaTeX document to
+# process in the given directory (which is a local copy of the given
+# git-url)
+
+baseDir: /tmp/fingerPieces
+
+tasks:
+  - dir: $baseDir/readme
+    gitUrl: https://github.com/diSimplex/fingerPiece-readme.git
+    doc: readme.tex
+  - dir: $baseDir/diagrams
+    gitUrl: https://github.com/diSimplex/fingerPiece-diagrams.git
+    doc: diagrams.tex
+

@@ -1,0 +1,19 @@
+[project]
+name = "lpilGerbyBuilder"
+version = "0.0.1"
+description = "A simply python tool to typset a collection of LPiL LaTeX documents and then run PlasTeX/Gerby over the result."
+authors = [
+    {name = "Stephen Gaito", email = "stephen@perceptisys.co.uk"},
+]
+dependencies = [
+    "pyyaml>=6.0",
+]
+requires-python = ">=3.10"
+license = {text = "Apache2.0"}
+
+[project.scripts]
+lpilGerbyBuilder  = "lpilGerbyBuilder.cli:cli"
+
+[build-system]
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"
