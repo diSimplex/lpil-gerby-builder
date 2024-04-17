@@ -47,24 +47,82 @@ We need:
 2. a simple tool which pulls all parts of a plastex document into "one
    place". (IS THIS A SEPARATE TOOL?)
 
+## Over all tasks
+
+1. Pull the SQLite database containing the tags to a local location and
+   then extract the tags database in a form suitable for PlasTeX/Gerby.
+
+   Really this should be run a program which obtains the tag database.
+   This then allows different users to maintain their tag database using
+   their own tool.
+
+2. Run the independent tasks
+
+3. Rsync the output to the Gerby-website location (should we build the
+   Gerby-website database at this point?)
+
 ## Independent tasks
 
 Each independent task does the following:
 
-1. changes directory to a specified directory
+1. changes directory to a specified directory.
 
    - if this directory does not exist then it is cloned from the given
      git-url.
 
-2. the git repository is pulled to be up to date
+2. the git repository is pulled to be up to date.
 
-3. the `lpilMagicRunner` is run on the given LaTeX file
+3. the `lpilMagicRunner` is run on the given LaTeX file.
+
+4. PlasTeX/Gerby is run on the result.
 
 ## Questions
 
-Can we plastex/gerby in multiple directories and then rsync the results
-together?
+### Tag database tool
 
-OR do we have to rsync the parts together and then plastex/gerby the
-whole?
 
+
+### PlasTeX/Gerby document merging
+
+**Q**: Can we plastex/gerby in multiple directories and then rsync the
+       results together? OR do we have to rsync the parts together and
+       then plastex/gerby the whole?
+
+**A**: We would *rather* assemble the Gerby website "late", so that
+       individual parts can be plastex/gerbied separately *and* *then*
+       assembled into a whole. This *should* be facilitated by the tags
+       which are unique across the "whole" exposition.
+
+**Problems**:
+
+  - the gerby runner assumes ONE paux file (which is a pickled python
+    structure). This is however *only* used when loading a given
+    document's list of tagged items
+
+  - the footnote numbering will clash between plastex/gerby documents.
+    Should we hack the Gerby plugin to allow external control of the
+    sequences OR should we fix-this-up at the end (i.e. a
+    compiler/linker)?
+
+  - the image numbering will clash between plastex/gerby runs. Again
+    should we hack the Gerby plugin to allow external control of the
+    sequences OR should we fix-this-up at the end (i.e. a
+    compiler/linker)?
+
+  - the lemma/theorem/definitions as well as chapter/section numbers will
+    have to be (re)set for each document at the LaTeX level. This *is*
+    something we do want to manage.
+
+    Fortunately the HTML cross links are based upon "tag/XXXX" instead of
+    actual filenames, so no linker link patch-ups are needed.
+
+**Solutions**:
+
+  - we probably should take ownership of *our* version of the gerby runner
+    (the existing gerby-website has hard references to Stack specific
+    data). The question is how to do this as cleanly as possible....
+
+  - we can then implement the "linker" in the actual gerby-website code
+    itself. (EXCEPT the plastex/gerby output contains some hard references
+    which will need to be altered on the fly (or when loaded into the
+    database))
