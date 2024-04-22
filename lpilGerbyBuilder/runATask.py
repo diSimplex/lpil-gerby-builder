@@ -2,11 +2,12 @@
 import os
 import yaml
 
-def runATask(aTask) :
+def runATask(aTask, config) :
   print("------------------------------------------------")
   print("running the task:")
   print("------------------------------------------------")
   print(yaml.dump(aTask))
+  print("------------------------------------------------")
 
   taskDir = aTask['dir']
   if not os.path.isdir(taskDir) :
@@ -20,3 +21,5 @@ def runATask(aTask) :
   os.system("git pull")
 
   os.system(f"lpilMagicRunner {aTask['doc']} build/latex")
+
+  os.system(f"plastex --add-plugins --tags {aTask['tagsPath']} {aTask['doc']}")
