@@ -3,7 +3,7 @@ import os
 import sys
 import yaml
 
-from lpilGerbyBuilder.configuration import loadConfig
+from lpilGerbyConfig.config import ConfigManager
 from lpilGerbyBuilder.preTasks import doPreTasks
 from lpilGerbyBuilder.postTasks import doPostTasks
 from lpilGerbyBuilder.runATask import runATask
@@ -19,17 +19,30 @@ where:
   sys.exit(1)
 
 def cli() :
-  if len(sys.argv) < 3 : usage()
 
-  configPath = sys.argv[1]
-  configPath = os.path.abspath(os.path.expanduser(configPath))
+  config = ConfigManager(requireBaseDir=True)
+  config.loadConfig()
+  config.checkInterface({
+    'tags.localPath' : {
+      'msg' : 'Can not collect tags database if no localPath specified'
+    },
+    'gerby.localPath' : {
+      'msg' : 'Can not collect plastex output if no localPath specified'
+    },
+    'documents.*.doc' : {
+      'msg' : 'Documents MUST have a document specified'
+    },
+    'documents.*.dir' : {
+      'msg' : 'Documents MUST have a directory speficied'
+    },
+    'documents.*.gitUrl' : {
+      'msg' : 'Documents MUST have a git url speficied'
+    }
+  })
 
-  baseDir    = sys.argv[2]
-  config = loadConfig(configPath, baseDir)
+  doPreTasks(config)
 
-#  doPreTasks(config, configPath, baseDir)
-
-#  for aTask in config['documents'] :
-#    runATask(aTask, config)
+  for aTask in config['documents'].keys() :
+    runATask(aTask, config)
 
   doPostTasks(config)

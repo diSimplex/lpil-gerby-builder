@@ -2,35 +2,32 @@
 import os
 import yaml
 
-def doPreTasks(config, configPath, baseDir) :
+def doPreTasks(config) :
   print("------------------------------------------------")
   print("doing the pre tasks:")
   print("------------------------------------------------")
 
-  if 'tagsDatabase' not in config : return
-
-  tagsConfig = config['tagsDatabase']
-
-  if 'localPath' not in tagsConfig : return
-
-  localPath = tagsConfig['localPath']
+  localPath = config['tags.localPath']
   tagsDir = os.path.dirname(localPath)
   if not os.path.isdir(tagsDir) :
 
-    if 'gitUrl' in tagsConfig :
+    gitUrl = config['tags.gitUrl']
+    if gitUrl :
       tagsBaseDir = os.path.dirname(tagsDir)
       tagsGitName = os.path.basename(tagsDir)
       os.makedirs(tagsBaseDir, exist_ok=True)
       os.chdir(tagsBaseDir)
       os.system("pwd")
-      os.system(f"git clone {tagsConfig['gitUrl']} {tagsGitName}")
+      os.system(f"git clone {gitUrl} {tagsGitName}")
     else :
       os.makedirs(tagsDir, exist_ok=True)
 
   os.chdir(tagsDir)
 
-  if 'remotePath' in tagsConfig :
-    remotePath = tagsConfig['remotePath']
+  remotePath = config['tags.remotePath']
+  if remotePath :
     os.system(f"rsync -av {remotePath} {localPath}")
 
+  configPath = config['configPath']
+  baseDir    = config['baseDir']
   os.system(f"lgtExporter {configPath} {baseDir}")
