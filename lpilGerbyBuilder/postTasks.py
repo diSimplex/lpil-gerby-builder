@@ -2,25 +2,39 @@
 import os
 import yaml
 
+
 def doPostTasks(config) :
   print("------------------------------------------------")
   print("doing the post tasks:")
   print("------------------------------------------------")
 
-  gerbyDir = config['gerby.localPath']
-  print(yaml.dump(gerbyDir))
 
-  if not os.path.isdir(gerbyDir) :
-    os.makedirs(gerbyDir, exist_ok=True)
+  for collectionName, collectionConfig in config['gerby.collections'].items() :
+    if config.cmdArgs['collection'] and \
+      config.cmdArgs['collection'] != collectionName.lower() : continue
+    # we also enforce collectionName == databaseName
+    # so do so here!
+    if config.cmdArgs['database'] and \
+      config.cmdArgs['database'] != collectionName.lower() : continue
 
-  os.chdir(gerbyDir)
+    print(yaml.dump(collectionConfig))
+    print("------------------------------------------------")
 
-  for docName in config['documents'].keys() :
-    origDir = os.path.join(
-      config[('documents', docName, 'dir')],
-      os.path.splitext(config[('documents', docName, 'doc')])[0]
-    )
-    os.system(f"rsync -av {origDir} {gerbyDir}")
+    gerbyDir = collectionConfig['plastexDir']
+    print(yaml.dump(gerbyDir))
 
-  os.system("pwd")
-  os.system("tree")
+    if not os.path.isdir(gerbyDir) :
+      os.makedirs(gerbyDir, exist_ok=True)
+
+    os.chdir(gerbyDir)
+
+    for documentName, documentConfig in collectionConfig['documents'].items() :
+      origDir = documentConfig['plastexDir']
+      gerbyDocDir = os.path.join(gerbyDir, 'html', documentName)
+      os.makedirs(gerbyDocDir, exist_ok=True)
+      os.system(f"rsync -av {origDir}/* {gerbyDocDir}")
+
+    os.system("pwd")
+    os.system("tree")
+
+    os.system(f"gerbyCompiler --collection {collectionName} {' '.join(config.cmdArgs['configPaths'])}")

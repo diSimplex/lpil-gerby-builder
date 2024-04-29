@@ -2,32 +2,49 @@
 import os
 import yaml
 
+from lpilGerbyBuilder.utils import runCmd
+
 def doPreTasks(config) :
   print("------------------------------------------------")
-  print("doing the pre tasks:")
+  print("DOING the PRE tasks:")
+  #print(yaml.dump(config))
   print("------------------------------------------------")
 
-  localPath = config['tags.localPath']
-  tagsDir = os.path.dirname(localPath)
-  if not os.path.isdir(tagsDir) :
+  for aDatabaseName, aDatabase in config['tags.databases'].items() :
+    if config.cmdArgs['database'] and \
+      config.cmdArgs['database'] != aDatabaseName.lower() : continue
+    localPath = aDatabase['localPath']
+    print(f"working on: {aDatabaseName}")
+    print(yaml.dump(aDatabase))
+    print("------------------------------------------------")
+    tagsDir = os.path.dirname(localPath)
+    if not os.path.isdir(tagsDir) :
 
-    gitUrl = config['tags.gitUrl']
-    if gitUrl :
-      tagsBaseDir = os.path.dirname(tagsDir)
-      tagsGitName = os.path.basename(tagsDir)
-      os.makedirs(tagsBaseDir, exist_ok=True)
-      os.chdir(tagsBaseDir)
-      os.system("pwd")
-      os.system(f"git clone {gitUrl} {tagsGitName}")
-    else :
-      os.makedirs(tagsDir, exist_ok=True)
+      gitUrl = aDatabase['gitUrl']
+      if gitUrl :
+        tagsBaseDir = os.path.dirname(tagsDir)
+        tagsGitName = os.path.basename(tagsDir)
+        os.makedirs(tagsBaseDir, exist_ok=True)
+        os.chdir(tagsBaseDir)
+        runCmd("pwd", "Could not get 'pwd'")
+        runCmd(
+          f"git clone {gitUrl} {tagsGitName}",
+          f"Could not clone {gitUrl}"
+        )
+      else :
+        os.makedirs(tagsDir, exist_ok=True)
 
-  os.chdir(tagsDir)
+    os.chdir(tagsDir)
 
-  remotePath = config['tags.remotePath']
-  if remotePath :
-    os.system(f"rsync -av {remotePath} {localPath}")
+    remotePath = aDatabase['remotePath']
+    if remotePath :
+      runCmd(
+        f"rsync -av {remotePath} {localPath}",
+        f"Could not rsync {remotePath} to {localPath}"
+      )
 
-  configPath = config['configPath']
-  baseDir    = config['baseDir']
-  os.system(f"lgtExporter {configPath} {baseDir}")
+    configPaths = config['configPaths']
+    runCmd(
+      f"lgtExporter --database={aDatabaseName} {' '.join(configPaths)}",
+      f"Could not run lgtExporter")
+    print("------------------------------------------------")
