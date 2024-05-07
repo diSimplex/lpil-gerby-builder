@@ -6,7 +6,7 @@ echo "--------------------------------------------------------------"
 date
 echo "--------------------------------------------------------------"
 
-$HOME/.local/bin/lpilGerbyBuilder $HOME/.config/lpil/config.yaml
+$HOME/.local/bin/lpilGerbyBuilder $HOME/LpilGerby $HOME/.config/lpil/config.yaml
 
 echo "--------------------------------------------------------------"
 date
