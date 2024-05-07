@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# This bash script runs the gerby builder on behalf of the crontab
+
+echo "--------------------------------------------------------------"
+date
+echo "--------------------------------------------------------------"
+
+$HOME/.local/bin/lpilGerbyBuilder $HOME/.config/lpil/config.yaml
+
+echo "--------------------------------------------------------------"
+date
+echo "--------------------------------------------------------------"

@@ -21,11 +21,19 @@ def runATask(documentName, documentConfig, databaseConfig) :
     os.system(f"git clone {gitUrl} {taskDirName}")
 
   os.chdir(taskDir)
+
+  print("git pull")
   os.system("git pull")
 
   docName = documentConfig['doc']
-  os.system(f"lpilMagicRunner {docName} build/latex")
+  cmd = f"lpilMagicRunner {docName} build/latex"
+  print("--------------------")
+  print(cmd)
+  os.system(cmd)
 
   tagsPath = databaseConfig['localPath'].replace('.sqlite', '.tags')
   plastexDir = documentConfig['plastexDir']
-  os.system(f"plastex --add-plugins --tags {tagsPath} --dir {plastexDir} {docName}")
+  cmd = f"plastex --add-plugins --tags {tagsPath} --dir {plastexDir} {docName}"
+  print("--------------------")
+  print(cmd)
+  os.system(cmd)

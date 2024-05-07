@@ -38,3 +38,10 @@ def doPostTasks(config) :
     os.system("tree")
 
     os.system(f"gerbyCompiler --collection {collectionName} {' '.join(config.cmdArgs['configPaths'])}")
+
+    localPath = os.path.join(
+      collectionConfig['localPath'],
+      'gerbyWebsite',
+    )
+    remotePath = collectionConfig['remotePath']
+    os.system(f"rsync -av {localPath}/ {remotePath}")
