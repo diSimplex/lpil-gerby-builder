@@ -2,10 +2,10 @@
 import os
 import yaml
 
-from lpilGerbyBuilder.utils import runCmd
+from lpilGerbyBuilder.utils import ranCmd
 
 def doPreTasks(config) :
-  print("------------------------------------------------")
+  print("================================================")
   print("DOING the PRE tasks:")
   #print(yaml.dump(config))
   print("------------------------------------------------")
@@ -26,8 +26,8 @@ def doPreTasks(config) :
         tagsGitName = os.path.basename(tagsDir)
         os.makedirs(tagsBaseDir, exist_ok=True)
         os.chdir(tagsBaseDir)
-        runCmd("pwd", "Could not get 'pwd'")
-        runCmd(
+        ranCmd("pwd", "Could not get 'pwd'")
+        ranCmd(
           f"git clone {gitUrl} {tagsGitName}",
           f"Could not clone {gitUrl}"
         )
@@ -38,13 +38,14 @@ def doPreTasks(config) :
 
     remotePath = aDatabase['remotePath']
     if remotePath :
-      runCmd(
+      ranCmd(
         f"rsync -av {remotePath} {localPath}",
         f"Could not rsync {remotePath} to {localPath}"
       )
 
     configPaths = config['configPaths']
-    runCmd(
+    ranCmd(
       f"lgtExporter --database={aDatabaseName} {' '.join(configPaths)}",
-      f"Could not run lgtExporter")
+      f"Could not run lgtExporter",
+      exitOnError=True)
     print("------------------------------------------------")

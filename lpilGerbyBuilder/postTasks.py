@@ -2,9 +2,10 @@
 import os
 import yaml
 
+from lpilGerbyBuilder.utils import ranCmd
 
 def doPostTasks(config) :
-  print("------------------------------------------------")
+  print("================================================")
   print("doing the post tasks:")
   print("------------------------------------------------")
 
@@ -20,6 +21,8 @@ def doPostTasks(config) :
     print(yaml.dump(collectionConfig))
     print("------------------------------------------------")
 
+    continueWithTask = True
+
     gerbyDir = collectionConfig['plastexDir']
     print(yaml.dump(gerbyDir))
 
@@ -29,19 +32,31 @@ def doPostTasks(config) :
     os.chdir(gerbyDir)
 
     for documentName, documentConfig in collectionConfig['documents'].items() :
+      if not continueWithTask : break
       origDir = documentConfig['plastexDir']
       gerbyDocDir = os.path.join(gerbyDir, 'html', documentName)
       os.makedirs(gerbyDocDir, exist_ok=True)
-      os.system(f"rsync -av {origDir}/* {gerbyDocDir}")
+      continueWithTask = ranCmd(
+        f"rsync -av {origDir}/ {gerbyDocDir}",
+        f"Could not rsync {origDir}/* to {gerbyDocDir}"
+      )
 
-    os.system("pwd")
-    os.system("tree")
+    ranCmd("pwd", "Could not get the present working directory")
+    ranCmd("tree", "Could not get the tree of this directory")
 
-    os.system(f"gerbyCompiler --collection {collectionName} {' '.join(config.cmdArgs['configPaths'])}")
+    if continueWithTask :
+      continueWithTask = ranCmd(
+        f"gerbyCompiler --collection {collectionName} {' '.join(config.cmdArgs['configPaths'])}",
+        f"Could not run gerbyCompiler on {collectionName}"
+      )
 
-    localPath = os.path.join(
-      collectionConfig['localPath'],
-      'gerbyWebsite',
-    )
-    remotePath = collectionConfig['remotePath']
-    os.system(f"rsync -av {localPath}/ {remotePath}")
+    if continueWithTask :
+      localPath = os.path.join(
+        collectionConfig['localPath'],
+        'gerbyWebsite',
+      )
+      remotePath = collectionConfig['remotePath']
+      continueWithTask = ranCmd(
+        f"rsync -av {localPath}/ {remotePath}"
+        f"Could not rsync {localPath} to {remmotePath}"
+      )

@@ -2,8 +2,14 @@
 
 # This bash script runs the gerby builder on behalf of the crontab
 
+export PATH=$HOME/.asdf/shims:$HOME/.local/bin:$PATH
+
 echo "--------------------------------------------------------------"
 date
+echo "--------------------------------------------------------------"
+echo $HOME
+echo "--------------------------------------------------------------"
+echo $PATH
 echo "--------------------------------------------------------------"
 
 $HOME/.local/bin/lpilGerbyBuilder $HOME/LpilGerby $HOME/.config/lpil/config.yaml

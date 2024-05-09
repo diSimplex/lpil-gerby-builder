@@ -2,14 +2,18 @@
 import os
 import yaml
 
+from lpilGerbyBuilder.utils import ranCmd
+
 def runATask(documentName, documentConfig, databaseConfig) :
-  print("------------------------------------------------")
+  print("================================================")
   print(f"running the task: {documentName}")
   print("------------------------------------------------")
   print(yaml.dump(documentConfig))
   print("------------------------------------------------")
   print(yaml.dump(databaseConfig))
   print("------------------------------------------------")
+
+  continueWithTask = True
 
   taskDir = documentConfig['dir']
   if not os.path.isdir(taskDir) :
@@ -18,22 +22,27 @@ def runATask(documentName, documentConfig, databaseConfig) :
     os.makedirs(taskBaseDir, exist_ok=True)
     os.chdir(os.path.dirname(taskDir))
     gitUrl = documentConfig['gitUrl']
-    os.system(f"git clone {gitUrl} {taskDirName}")
+    continueWithTask = ranCmd(
+      f"git clone {gitUrl} {taskDirName}",
+      f"Could not clone {gitUrl}"
+    )
 
   os.chdir(taskDir)
 
-  print("git pull")
-  os.system("git pull")
+  if continueWithTask :
+    continueWithTask = ranCmd("git pull", "Could not git pull")
 
-  docName = documentConfig['doc']
-  cmd = f"lpilMagicRunner {docName} build/latex"
-  print("--------------------")
-  print(cmd)
-  os.system(cmd)
+  if continueWithTask :
+    docName = documentConfig['doc']
+    continueWithTask = ranCmd(
+      f"lpilMagicRunner {docName} build/latex",
+      f"Could not run lpilMagicRunner on {docName}"
+    )
 
-  tagsPath = databaseConfig['localPath'].replace('.sqlite', '.tags')
-  plastexDir = documentConfig['plastexDir']
-  cmd = f"plastex --add-plugins --tags {tagsPath} --dir {plastexDir} {docName}"
-  print("--------------------")
-  print(cmd)
-  os.system(cmd)
+  if continueWithTask :
+    tagsPath = databaseConfig['localPath'].replace('.sqlite', '.tags')
+    plastexDir = documentConfig['plastexDir']
+    continueWithTask = ranCmd(
+      f"plastex --add-plugins --tags {tagsPath} --dir {plastexDir} {docName}",
+      f"Could not run plastex on {docName}"
+    )
