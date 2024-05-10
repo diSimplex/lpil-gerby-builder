@@ -45,6 +45,7 @@ def doPostTasks(config) :
     ranCmd("tree", "Could not get the tree of this directory")
 
     if continueWithTask :
+      #os.unlink(os.path.join(gerbyDir, 'db', f"{collectionName}.sqlite"))
       continueWithTask = ranCmd(
         f"gerbyCompiler --collection {collectionName} {' '.join(config.cmdArgs['configPaths'])}",
         f"Could not run gerbyCompiler on {collectionName}"
@@ -57,6 +58,6 @@ def doPostTasks(config) :
       )
       remotePath = collectionConfig['remotePath']
       continueWithTask = ranCmd(
-        f"rsync -av {localPath}/ {remotePath}"
-        f"Could not rsync {localPath} to {remmotePath}"
+        f"rsync -av {localPath}/ {remotePath}",
+        f"Could not rsync {localPath} to {remotePath}"
       )
