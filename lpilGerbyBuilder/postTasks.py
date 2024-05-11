@@ -34,7 +34,7 @@ def doPostTasks(config) :
     for documentName, documentConfig in collectionConfig['documents'].items() :
       if not continueWithTask : break
       origDir = documentConfig['plastexDir']
-      gerbyDocDir = os.path.join(gerbyDir, 'html', documentName)
+      gerbyDocDir = os.path.join(gerbyDir, 'html', 'docs', documentName)
       os.makedirs(gerbyDocDir, exist_ok=True)
       continueWithTask = ranCmd(
         f"rsync -av {origDir}/ {gerbyDocDir}",
