@@ -37,8 +37,8 @@ def doPostTasks(config) :
       gerbyDocDir = os.path.join(gerbyDir, 'html', 'docs', documentName)
       os.makedirs(gerbyDocDir, exist_ok=True)
       continueWithTask = ranCmd(
-        f"rsync -av {origDir}/ {gerbyDocDir}",
-        f"Could not rsync {origDir}/* to {gerbyDocDir}"
+        f"rsync -av {origDir} {gerbyDocDir}",
+        f"Could not rsync {origDir} to {gerbyDocDir}"
       )
 
     ranCmd("pwd", "Could not get the present working directory")
@@ -58,6 +58,10 @@ def doPostTasks(config) :
       )
       remotePath = collectionConfig['remotePath']
       continueWithTask = ranCmd(
-        f"rsync -av {localPath}/ {remotePath}",
-        f"Could not rsync {localPath} to {remotePath}"
+        f"rsync -av {localPath}/db {remotePath}",
+        f"Could not rsync {localPath}/db to {remotePath}"
+      )
+      continueWithTask = ranCmd(
+        f"rsync -av {localPath}/html {remotePath}",
+        f"Could not rsync {localPath}/html to {remotePath}"
       )
