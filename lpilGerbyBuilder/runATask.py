@@ -4,7 +4,10 @@ import yaml
 
 from lpilGerbyBuilder.utils import ranCmd
 
-def runATask(documentName, documentConfig, databaseConfig) :
+def runATask(
+  documentName, documentConfig,
+  collectionConfig, databaseConfig
+) :
   print("================================================")
   print(f"running the task: {documentName}")
   print("------------------------------------------------")
@@ -39,10 +42,19 @@ def runATask(documentName, documentConfig, databaseConfig) :
       f"Could not run lpilMagicRunner on {docName}"
     )
 
+  plastexDir = documentConfig['plastexDir']
   if continueWithTask :
     tagsPath = databaseConfig['localPath'].replace('.sqlite', '.tags')
-    plastexDir = documentConfig['plastexDir']
     continueWithTask = ranCmd(
       f"plastex --add-plugins --tags {tagsPath} --dir {plastexDir} {docName}",
       f"Could not run plastex on {docName}"
+    )
+
+  gerbyDir = collectionConfig['plastexDir']
+  if continueWithTask :
+    gerbyDocDir = os.path.join(gerbyDir, 'html', 'docs', documentName)
+    os.makedirs(gerbyDocDir, exist_ok=True)
+    continueWithTask = ranCmd(
+      f"rsync -av {plastexDir}/ {gerbyDocDir}",
+      f"Could not rsync {plastexDir}/ to {gerbyDocDir}"
     )

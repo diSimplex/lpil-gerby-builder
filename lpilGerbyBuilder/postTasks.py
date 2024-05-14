@@ -31,16 +31,6 @@ def doPostTasks(config) :
 
     os.chdir(gerbyDir)
 
-    for documentName, documentConfig in collectionConfig['documents'].items() :
-      if not continueWithTask : break
-      origDir = documentConfig['plastexDir']
-      gerbyDocDir = os.path.join(gerbyDir, 'html', 'docs', documentName)
-      os.makedirs(gerbyDocDir, exist_ok=True)
-      continueWithTask = ranCmd(
-        f"rsync -av {origDir} {gerbyDocDir}",
-        f"Could not rsync {origDir} to {gerbyDocDir}"
-      )
-
     ranCmd("pwd", "Could not get the present working directory")
     ranCmd("tree", "Could not get the tree of this directory")
 

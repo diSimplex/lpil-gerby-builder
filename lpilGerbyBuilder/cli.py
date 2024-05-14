@@ -61,6 +61,9 @@ def cli() :
         for aDocumentName, aDocumentConfig in aCollectionConfig['documents'].items() :
           if config.cmdArgs['document'] and \
             config.cmdArgs['document'] != aDocumentName.lower() : continue
-          runATask(aDocumentName, aDocumentConfig, aDatabaseConfig)
+          runATask(
+            aDocumentName, aDocumentConfig,
+            aCollectionConfig, aDatabaseConfig
+          )
 
   doPostTasks(config)
