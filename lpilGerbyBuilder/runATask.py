@@ -44,6 +44,14 @@ def runATask(
 
   plastexDir = documentConfig['plastexDir']
   if continueWithTask :
+    pdfName = docName.replace('.tex','')+'.pdf'
+    pdfPath = os.path.join(taskDir, 'build', 'latex', pdfName)
+    continueWithTask = ranCmd(
+      f"cp {pdfPath} {plastexDir}/{pdfName}",
+      f"Could not copy the PDF for {docName}"
+    )
+
+  if continueWithTask :
     tagsPath = databaseConfig['localPath'].replace('.sqlite', '.tags')
     continueWithTask = ranCmd(
       f"plastex --add-plugins --tags {tagsPath} --dir {plastexDir} {docName}",
