@@ -58,6 +58,15 @@ def runATask(
       f"Could not copy the PDF for {docName}"
     )
 
+  if continueWithTask :
+    bibName = docName.replace('.tex','')+'.bib'
+    bibPath = os.path.join(taskDir, 'build', 'latex', bibName)
+    if os.path.exists(bibPath) :
+      continueWithTask = ranCmd(
+        f"cp {bibPath} {plastexDir}/{documentName}.bib",
+        f"Could not copy the BIB for {docName}"
+      )
+
   gerbyDir = collectionConfig['plastexDir']
   if continueWithTask :
     gerbyDocDir = os.path.join(gerbyDir, 'html', 'docs', documentName)
