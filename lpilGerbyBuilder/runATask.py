@@ -51,21 +51,15 @@ def runATask(
     )
 
   if continueWithTask :
-    pdfName = docName.replace('.tex','')+'.pdf'
-    pdfPath = os.path.join(taskDir, 'build', 'latex', pdfName)
-    continueWithTask = ranCmd(
-      f"cp {pdfPath} {plastexDir}/{documentName}.pdf",
-      f"Could not copy the PDF for {docName}"
-    )
-
-  if continueWithTask :
-    bibName = docName.replace('.tex','')+'.bib'
-    bibPath = os.path.join(taskDir, 'build', 'latex', bibName)
-    if os.path.exists(bibPath) :
-      continueWithTask = ranCmd(
-        f"cp {bibPath} {plastexDir}/{documentName}.bib",
-        f"Could not copy the BIB for {docName}"
-      )
+    fileExtensions = [ '.pdf', '.bib', '.bbl']
+    for anExt in fileExtensions :
+      fileName = docName.replace('.tex','')+anExt
+      filePath = os.path.join(taskDir, 'build', 'latex', fileName)
+      if os.path.exists(filePath) :
+        continueWithTask = ranCmd(
+          f"cp {filePath} {plastexDir}/{fileName}",
+          f"Could not copy the *{anExt} for {docName}"
+        )
 
   gerbyDir = collectionConfig['plastexDir']
   if continueWithTask :
